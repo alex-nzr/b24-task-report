@@ -1,0 +1,19 @@
+{% extends 'base.html.twig' %}
+{% block page_data %}
+{{ {page: 'index', timezone: timezone, employees: employees, runs: runs, error: error, formErrors: formErrors, action: path('report_create'), csrf: form._token.vars.value, values: {employeeId: form.employeeId.vars.value, from: form.from.vars.value, to: form.to.vars.value, collectNow: form.collectNow.vars.checked}}|json_encode(json_flags)|raw }}
+{% endblock %}
+{% block body %}
+<h1>Отчёт по времени сотрудника</h1>
+<p>Доступные задачи, где сотрудник сейчас исполнитель или соисполнитель и списал время за период. Часовой пояс: {{ timezone }}.</p>
+{% if error %}<p role="alert">{{ error }}</p>{% endif %}
+{{ form_start(form, {attr: {class: 'panel'}}) }}
+{{ form_widget(form) }}
+<p>«Сформировать сразу»: после проверки данных запустить команду сейчас, не дожидаясь крона, если другой сборщик не занят. Мягкий бюджет — 45 секунд между шагами; может собраться только часть отчёта. Запрос к Б24 может увеличить ожидание. Остальное соберёт следующий запуск команды.</p>
+<button{% if employees is empty %} disabled{% endif %}>Сформировать отчёт</button>
+{{ form_end(form) }}
+<h2>Последние отчёты</h2>
+<table><thead><tr><th>Сотрудник</th><th>Период</th><th>Статус</th><th>Действия</th></tr></thead><tbody>
+{% for run in runs %}<tr><td><a href="{{ path('report_show', {id: run.id}) }}">{{ run.employee_name }}</a></td><td>{{ run.date_from }} — {{ run.date_to }}</td><td>{{ run.status }}</td><td><form action="{{ path('report_delete', {id: run.id}) }}" method="post"><input type="hidden" name="_token" value="{{ run.deleteCsrf }}"><button>Удалить</button></form></td></tr>
+{% else %}<tr><td colspan="4">Отчётов пока нет.</td></tr>{% endfor %}
+</tbody></table>
+{% endblock %}

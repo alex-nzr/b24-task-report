@@ -1,0 +1,16 @@
+/.osp
+/vendor/
+/node_modules/
+/public/build/
+/components.d.ts
+/auto-imports.d.ts
+/playwright-report/
+/test-results/
+/var/
+/.env
+/.env.*
+!/.env.example
+/.phpunit.cache/
+/.idea/
+/.ai/
+/AGENTS.md

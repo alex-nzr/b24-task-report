@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+{% block page_data %}
+{{ {page: 'login', username: username, error: error ? 'Не удалось войти. Проверьте логин и пароль.' : null, csrf: csrf_token('authenticate'), action: path('login')}|json_encode(json_flags)|raw }}
+{% endblock %}
+{% block body %}
+<h1>Вход в отчёты</h1>
+{% if error %}<p role="alert">Не удалось войти. Проверьте логин и пароль.</p>{% endif %}
+<form method="post" action="{{ path('login') }}" class="panel">
+    <label>Логин <input name="_username" value="{{ username }}" autocomplete="username" required></label>
+    <label>Пароль <input type="password" name="_password" autocomplete="current-password" required></label>
+    <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+    <button>Войти</button>
+</form>
+{% endblock %}

@@ -1,0 +1,14 @@
+doctrine:
+    dbal:
+        driver: pdo_pgsql
+        host: '%env(DATABASE_SERVER)%'
+        port: '%env(int:DATABASE_PORT)%'
+        dbname: '%env(DATABASE_NAME)%'
+        user: '%env(DATABASE_USER)%'
+        password: '%env(DATABASE_PASSWORD)%'
+        server_version: '15'
+        charset: UTF8
+when@test:
+    doctrine:
+        dbal:
+            dbname_suffix: '_test'

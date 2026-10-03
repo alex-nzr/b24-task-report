@@ -1,0 +1,32 @@
+{% extends 'base.html.twig' %}
+{% block page_data %}
+{{ {page: 'report', run: run, rows: rows, errors: errors, total: total, complete: complete, portalBase: portalBase, progressUrl: path('report_progress', {id: run.id}), csvUrl: path('report_csv', {id: run.id}), refreshUrl: path('report_refresh', {id: run.id}), csrf: csrf_token('refresh_' ~ run.id)}|json_encode(json_flags)|raw }}
+{% endblock %}
+{% block body %}
+<p>Калькулятор зарплаты доступен с JavaScript. Введённые суммы не сохраняются на сервере.</p>
+<h1>{{ run.employee_name }}</h1>
+<p>{{ run.date_from }} — {{ run.date_to }} включительно · {{ run.timezone }}</p>
+<p>Статус: {{ run.status }} · обработано задач: {{ run.checked_tasks }}{% if run.total_tasks is defined and run.total_tasks is not null %} из {{ run.total_tasks }} (выборка на начало сбора){% endif %}.</p>
+<p>Создан: {{ run.created_at }} · начало сбора: {{ run.started_at|default('—') }} · окончание: {{ run.finished_at|default('—') }}.</p>
+<p>Отчёт включает только задачи и записи, доступные владельцу вебхука. Недоступные и удалённые задачи не восстановлены.</p>
+{% if run.status == 'failed' %}<p role="alert">Сбор прерван: {{ run.error_code }}. Итог неполный.</p>
+{% elseif run.status == 'waiting' %}<p>Пауза перед повторной попыткой запроса к Битрикс24.{% if run.error_code %} Код: {{ run.error_code }}.{% endif %}{% if run.retry_at %} Следующий повтор: {{ run.retry_at|date('d.m.Y H:i:s', run.timezone) }} {{ run.timezone }}.{% endif %}</p>
+{% endif %}
+{% if run.status != 'complete' %}<p>Промежуточный итог: сохранённые данные неполные.</p>{% endif %}
+{% set stages = {time_entries: 'Получение записей времени', participants: 'Получение участников', task_list: 'Получение списка задач'} %}
+{% set states = {pending: 'Ожидает повтора', exhausted: 'Повторы завершены', resolved: 'Исправлено повтором'} %}
+{% if errors %}<h2>Ошибки сбора</h2><ul>{% for error in errors %}<li>Задача {{ error.task_id|default('—') }} {{ error.task_title }} · {% if stages[error.stage] is defined %}{{ stages[error.stage] }} ({{ error.stage }}){% else %}{{ error.stage }}{% endif %} · {{ error.error_code }} · попытки: {{ error.attempts }} · {% if states[error.state] is defined %}{{ states[error.state] }} ({{ error.state }}){% else %}{{ error.state }}{% endif %}{% if error.retry_at %} · повтор: {{ error.retry_at|date('d.m.Y H:i:s', run.timezone) }} {{ run.timezone }}{% endif %}</li>{% endfor %}</ul>{% endif %}
+<p><a href="{{ path('report_csv', {id: run.id}) }}">Скачать CSV</a></p>
+<details><summary>Компактная версия (без JavaScript скопируйте текст вручную)</summary><pre>{% if run.status != 'complete' %}Неполный отчёт: только сохранённые списания, проверьте ошибки.
+{% endif %}{% if portalBase and run.employee_id is defined %}{% for row in rows %}{{ portalBase }}/company/personal/user/{{ run.employee_id }}/tasks/task/view/{{ row.id }}/ {{ (row.seconds / 3600)|round(4) }}ч
+{% endfor %}{% else %}Ссылки недоступны: проверьте адрес портала.
+{% endif %}Итого {{ (rows|map(row => row.seconds)|reduce((sum, seconds) => sum + seconds, 0) / 3600)|round(4) }}ч</pre></details>
+<div class="table-wrap"><table><thead><tr><th>ID</th><th>Задача</th><th>Статус Б24</th><th>Исполнитель ID</th><th>Роль сотрудника сейчас</th><th>Время (ч:м)</th></tr></thead><tbody>
+{% for row in rows %}
+<tr><td>{{ row.id }}</td><td>{% if portalBase %}<a href="{{ portalBase }}/company/personal/user/{{ run.employee_id|default(row.responsibleId) }}/tasks/task/view/{{ row.id }}/" target="_blank" rel="noopener noreferrer">{{ row.title }}</a>{% else %}{{ row.title }}{% endif %}</td><td>{{ row.status }}</td><td>{{ row.responsibleId }}</td><td>{{ row.role }}</td><td>{{ '%02d:%02d'|format(row.seconds // 3600, (row.seconds % 3600) // 60) }}</td></tr>
+<tr><td colspan="6"><details><summary>Записи времени ({{ row.entries|length }})</summary><ul>{% for entry in row.entries %}<li>{{ entry.CREATED_DATE|date('d.m.Y H:i:s', run.timezone) }} · {{ '%02d:%02d'|format(entry.SECONDS // 3600, (entry.SECONDS % 3600) // 60) }} {{ entry.COMMENT_TEXT|default('') }}</li>{% endfor %}</ul></details></td></tr>
+{% else %}<tr><td colspan="6">{{ run.status == 'complete' ? 'В этом периоде списаний времени не найдено.' : 'Сохранённых списаний времени пока нет.' }}</td></tr>{% endfor %}
+</tbody><tfoot><tr><th colspan="5">{{ run.status == 'complete' ? 'Итого' : 'Промежуточный итог (неполный)' }}</th><th>{{ total }}</th></tr></tfoot></table></div>
+<form method="post" action="{{ path('report_refresh', {id: run.id}) }}"><input type="hidden" name="_token" value="{{ csrf_token('refresh_' ~ run.id) }}"><button>Собрать заново</button></form>
+<p>Роли и состояние задач текущие, не исторические. Сохранённый отчёт автоматически не обновляется.</p>
+{% endblock %}

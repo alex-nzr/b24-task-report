@@ -1,0 +1,15 @@
+@import "tailwindcss";
+@import "@bitrix24/b24ui-nuxt";
+
+@layer base {
+    body {
+        margin: 0;
+        font-family: var(--ui-font-family-primary, system-ui, sans-serif);
+        color: var(--ui-color-base-1);
+        background: var(--ui-color-bg-content-secondary);
+    }
+    a:focus-visible, summary:focus-visible {
+        outline: 2px solid var(--ui-color-accent-main-primary);
+        outline-offset: 4px;
+    }
+}

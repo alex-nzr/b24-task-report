@@ -1,0 +1,25 @@
+framework:
+    secret: '%env(APP_SECRET)%'
+    csrf_protection: true
+    session:
+        cookie_httponly: true
+        cookie_samesite: lax
+        cookie_secure: auto
+    router:
+        utf8: true
+    form: true
+    validation:
+        email_validation_mode: html5
+    cache:
+        pools:
+            cache.bitrix: { adapter: cache.adapter.filesystem }
+    rate_limiter:
+        bitrix:
+            policy: fixed_window
+            limit: 1
+            interval: '1 second'
+when@test:
+    framework:
+        test: true
+        session:
+            storage_factory_id: session.storage.factory.mock_file

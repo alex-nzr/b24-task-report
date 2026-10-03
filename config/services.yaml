@@ -1,0 +1,33 @@
+parameters:
+    report_timezone: '%env(REPORT_TIMEZONE)%'
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        bind:
+            string $reportTimezone: '%report_timezone%'
+    App\:
+        resource: '../src/'
+        exclude: '../src/{Kernel.php,Report/ReportPeriod.php,Report/TaskCollectionFailure.php,Bitrix/BitrixFailure.php}'
+    bitrix.http_client:
+        class: Symfony\Contracts\HttpClient\HttpClientInterface
+        factory: ['Symfony\Component\HttpClient\HttpClient', create]
+    App\Bitrix\BitrixClient:
+        arguments:
+            $http: '@bitrix.http_client'
+            $portalUrl: '%env(B24_PORTAL_URL)%'
+            $webhookUserId: '%env(B24_WEBHOOK_USER_ID)%'
+            $webhookToken: '%env(B24_WEBHOOK_TOKEN)%'
+            $limiter: '@limiter.bitrix'
+    App\Report\EmployeeDirectory:
+        arguments:
+            $cache: '@cache.bitrix'
+    App\Report\WorkingDays:
+        arguments:
+            $cache: '@cache.bitrix'
+    App\Controller\ReportController:
+        arguments:
+            $portalUrl: '%env(B24_PORTAL_URL)%'
+    App\Twig\ViteExtension:
+        arguments:
+            $projectDir: '%kernel.project_dir%'

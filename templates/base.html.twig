@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Отчёты по задачам{% endblock %}</title>
+    {% set assets = vite_entry() %}
+    {% if assets %}{% for stylesheet in assets.styles %}<link rel="stylesheet" href="{{ stylesheet }}">{% endfor %}{% endif %}
+    {% block head %}{% endblock %}
+</head>
+<body>
+{% set flash_messages = app.flashes %}
+<div id="app" class="isolate">
+<header><a href="{{ path('reports') }}">Задачи · время</a>
+{% if app.user %}<form action="{{ path('logout') }}" method="post"><input type="hidden" name="_csrf_token" value="{{ csrf_token('logout') }}"><button>Выйти</button></form>{% endif %}
+</header>
+<main>{% for messages in flash_messages %}{% for message in messages %}<p role="alert">{{ message }}</p>{% endfor %}{% endfor %}{% block body %}{% endblock %}</main>
+</div>
+{% set json_flags = constant('JSON_HEX_TAG') b-or constant('JSON_HEX_AMP') b-or constant('JSON_HEX_APOS') b-or constant('JSON_HEX_QUOT') %}
+<script id="app-data" type="application/json">{
+    "authenticated": {{ app.user ? 'true' : 'false' }},
+    "flashes": {{ flash_messages|json_encode(json_flags)|raw }},
+    "homeUrl": {{ path('reports')|json_encode(json_flags)|raw }},
+    "logoutUrl": {{ path('logout')|json_encode(json_flags)|raw }},
+    "logoutToken": {{ (app.user ? csrf_token('logout') : '')|json_encode(json_flags)|raw }},
+    "pageData": {% block page_data %}{}{% endblock %}
+}</script>
+{% if assets %}<script type="module" src="{{ assets.script }}"></script>{% endif %}
+</body>
+</html>
