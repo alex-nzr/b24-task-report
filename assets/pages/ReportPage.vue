@@ -133,7 +133,7 @@ function retryDate(timestamp) {
         </div>
         <B24Card>
             <h2 class="text-h2">Калькулятор зарплаты</h2>
-            <p class="mt-2 text-sm text-(--ui-color-base-2)">Расчёт только в браузере, не сохраняется. Суммы округляются до целых рублей на каждом этапе. Коэффициент премии — 1,06 по заданной формуле.</p>
+            <p class="mt-2 text-sm text-(--ui-color-base-2)">Расчёт только в браузере, не сохраняется. Суммы округляются до целых рублей на каждом этапе. Выплата по премии = премия / 0,94; при отрицательной премии — 0.</p>
             <p class="mt-2 text-sm" role="status">{{ calendarSource === 'loading' ? 'Загрузка календарной нормы…' : calendarSource === 'calendar' ? 'Норма за полный месяц по календарю портала. Проверьте праздники и переносы; это не личный график сотрудника.' : calendarSource === 'multiple_months' ? 'Период включает несколько месяцев: укажите норму вручную. Оклад по месяцам автоматически не распределяется.' : 'Календарь недоступен: подставлено 21. Уточните норму вручную.' }}</p>
             <div class="mt-4 grid gap-4 sm:grid-cols-2">
                 <B24FormField label="Рабочих дней в месяце"><B24Input v-model="workingDays" aria-label="Рабочих дней в месяце" type="number" min="1" step="1" @update:model-value="daysEdited = true" /></B24FormField>

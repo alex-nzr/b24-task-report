@@ -1,7 +1,7 @@
 # Как работает отчёт: от формы до очистки
 
 Эта документация описывает фактическую реализацию после перехода на
-`app:reports:collect`. PHP 8.3, Symfony 7.4, PostgreSQL 15; интерфейс Vue +
+`app:reports:collect`. PHP 8.4, Symfony 7.4, PostgreSQL 16; интерфейс Vue +
 официальный Bitrix24 UI Kit. Постоянный worker и Messenger для сбора не нужны.
 
 ## 1. Общая схема для пользователя
@@ -386,7 +386,7 @@ UI-сборку, кеш сотрудников или таблицу мигра�
 Локально планировщик не настроен и не нужен. Из корня проекта:
 
 ```powershell
-$reportPhp = 'D:\OpenServer\modules\PHP-8.3\PHP\php.exe'
+$reportPhp = 'D:\OpenServer\modules\PHP-8.4\php.exe'
 & $reportPhp bin/console app:reports:collect
 # По умолчанию 45; можно задать другой мягкий бюджет:
 & $reportPhp bin/console app:reports:collect --time-limit=120
@@ -400,11 +400,11 @@ $reportPhp = 'D:\OpenServer\modules\PHP-8.3\PHP\php.exe'
 Старый отчёт, уже failed до перехода, автоматически не перезапускается.
 
 Пример Linux cron (пути/пользователя/лог замените своими; не устанавливается
-приложением). PHP CLI обязан быть 8.3 с теми же расширениями/доступами:
+приложением). PHP CLI обязан быть 8.4 с теми же расширениями/доступами:
 
 ```cron
-* * * * * cd /srv/b24-task-report && /usr/bin/php8.3 bin/console app:reports:collect --env=prod --no-debug >> /var/log/b24-task-report-collect.log 2>&1
-15 3 * * * cd /srv/b24-task-report && /usr/bin/php8.3 bin/console app:reports:purge --env=prod --no-debug >> /var/log/b24-task-report-purge.log 2>&1
+* * * * * cd /srv/b24-task-report && /usr/bin/php8.4 bin/console app:reports:collect --env=prod --no-debug >> /var/log/b24-task-report-collect.log 2>&1
+15 3 * * * cd /srv/b24-task-report && /usr/bin/php8.4 bin/console app:reports:purge --env=prod --no-debug >> /var/log/b24-task-report-purge.log 2>&1
 ```
 
 Процессу нужны права на var/cache/var/log и DB-доступ. Настройте ротацию и

@@ -60,11 +60,12 @@ test('salary calculator updates live and appends calculation to compact report',
     await page.getByLabel('Фактически отработано дней', { exact: true }).fill('7');
     await page.getByLabel('Ставка часа', { exact: true }).fill('1100');
     await expect(page.getByTestId('salary-summary')).toContainText('13333');
-    await expect(page.getByTestId('salary-summary')).toContainText('10936');
+    await expect(page.getByTestId('salary-summary')).toContainText('10976');
     await expect(page.getByLabel('Отработано часов', { exact: true })).toHaveValue('21.5');
     await expect(page.getByLabel('Отработано часов', { exact: true })).toHaveAttribute('readonly', '');
     await page.getByRole('button', { name: 'Компактная версия', exact: true }).click();
-    await expect(page.getByLabel('Текст компактного отчёта', { exact: true })).toHaveValue(/13333 р\. - оклад, 10936 р\. - премия самозанятому/);
+    await expect(page.getByLabel('Текст компактного отчёта', { exact: true })).toHaveValue(/10317\/0\.94=10976 р\./);
+    await expect(page.getByLabel('Текст компактного отчёта', { exact: true })).toHaveValue(/13333 р\. - оклад, 10976 р\. - премия самозанятому/);
     await page.getByRole('button', { name: 'Закрыть', exact: true }).click();
     await page.getByLabel('Рабочих дней в месяце', { exact: true }).fill('0');
     await expect(page.getByTestId('salary-summary')).toContainText('Проверьте');

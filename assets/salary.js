@@ -4,7 +4,7 @@ export function calculateSalary(salary, days, actual, hours, rate) {
     const salaryPay = Math.round(Number(salary) / Number(days) * Number(actual));
     const earned = Math.round(Number(hours) * Number(rate));
     const bonus = earned - salaryPay;
-    const payout = bonus < 0 ? 0 : Math.round(bonus * 1.06);
+    const payout = bonus < 0 ? 0 : Math.round(bonus / 0.94);
     if (![salaryPay, earned, bonus, payout].every(Number.isSafeInteger)) return null;
     return { salary: salaryPay, earned, bonus, payout };
 }
@@ -21,7 +21,7 @@ ${number(Number(hours.toFixed(4)))}ч * ${number(rate)} р. = ${result.earned} �
 Премия
 ${result.earned} - ${result.salary} = ${result.bonus} р.
 Премия с учётом налога самозанятого
-${result.bonus < 0 ? 'Премия отрицательная: выплата по премии = 0 р.' : `${result.bonus}*1.06=${result.payout} р.`}
+${result.bonus < 0 ? 'Премия отрицательная: выплата по премии = 0 р.' : `${result.bonus}/0.94=${result.payout} р.`}
 
 Итоговая выплата
 ${result.salary} р. - оклад, ${result.payout} р. - премия самозанятому.`;

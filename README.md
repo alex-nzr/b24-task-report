@@ -1,7 +1,7 @@
 # Отчёт по задачам Битрикс24
 
 Веб-приложение формирует отчёт по списанному времени одного сотрудника за
-месяц или произвольный период. PHP **8.3**, Symfony **7.4**, PostgreSQL **15**.
+месяц или произвольный период. PHP **8.4**, Symfony **7.4**, PostgreSQL **16**.
 
 ## Что учитывается
 
@@ -66,19 +66,19 @@ Doctrine DBAL выбран вместо ORM для небольших служе
 
 ## Настройка
 
-Требуются PHP 8.3 с `pdo_pgsql`, `curl`, `openssl`, `mbstring`, `intl`, Composer
-и PostgreSQL 15. Document root веб-сервера — **только `public/`**, не корень проекта.
+Требуются PHP 8.4 с `pdo_pgsql`, `curl`, `openssl`, `mbstring`, `intl`, Composer
+и PostgreSQL 16. Document root веб-сервера — **только `public/`**, не корень проекта.
 Не публикуйте `.ai`, `.env`, `vendor`, `var`; для внешнего доступа нужен HTTPS.
 
 В PowerShell задайте явный PHP, не используйте PHP 8.1 из PATH:
 
 ```powershell
-$reportPhp = 'D:\OpenServer\modules\PHP-8.3\PHP\php.exe'
+$reportPhp = 'D:\OpenServer\modules\PHP-8.4\php.exe'
 & $reportPhp .ai/.tmp/composer.phar install
 ```
 
 В текущей рабочей копии Composer установлен в `.ai/.tmp`. Для нового окружения
-используйте собственный проверенный `composer.phar` с PHP 8.3.
+используйте собственный проверенный `composer.phar` с PHP 8.4.
 
 Для интерфейса нужен Node.js 22.12+ в ветке 22 или 24+. Соберите frontend:
 

@@ -6,7 +6,7 @@ doctrine:
         dbname: '%env(DATABASE_NAME)%'
         user: '%env(DATABASE_USER)%'
         password: '%env(DATABASE_PASSWORD)%'
-        server_version: '15'
+        server_version: '16'
         charset: UTF8
 when@test:
     doctrine:
